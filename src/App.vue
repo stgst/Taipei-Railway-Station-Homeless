@@ -23,9 +23,9 @@ const currentComponent = computed(() => {
 
 <template>
 
-  <div id="bg" class="bg-zinc-900 w-screen h-screen flex items-center justify-center">
+  <div id="bg" class="fixed bg-zinc-900 w-screen h-screen flex items-center justify-center">
+    <div id="bg-wrapper" class="fixed bg-black opacity-50 w-screen h-screen"></div>
     <div class="container flex items-center justify-center">
-      <div id="bg-wrapper" class="fixed bg-black opacity-50 w-full h-full"></div>
       <div id="app" class="w-full h-full md:w-lg">
         <component :is="currentComponent"/>
       </div>
