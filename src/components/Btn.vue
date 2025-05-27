@@ -9,19 +9,12 @@ const handleClick = () => {
 </script>
 
 <template>
-  <div id="btn" class="flex items-center justify-center">
+  <div id="btn" class="mt-15 mb-15 flex items-center justify-center">
     <button 
-      class="cursor-pointer animate__animated animate__pulse animate__infinite"
+      class="relative cursor-pointer animate__animated animate__pulse animate__infinite"
       @click="handleClick"
     >
       <img src="@/assets/img/btn.png" class=" w-15 h-15 md:w-12 md:h-12 border-2 border-white rounded-full">
     </button>
   </div>
 </template>
-
-<style>
-button {
-    position: absolute;
-    bottom: 10%;
-}
-</style>

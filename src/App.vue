@@ -25,10 +25,11 @@ const currentComponent = computed(() => {
 <template>
 
   <div class="bg-zinc-900 w-screen h-screen flex items-center justify-center">
-    <div class="container flex items-center justify-center">
-      <div id="bg" class="w-full h-full md:w-lg"></div>
-      <div id="app" class="w-full h-full md:w-lg">
-        <component :is="currentComponent" />
+    <div class="relative container flex items-center justify-center">
+      <div id="bg-wrapper" class="fixed bg-black opacity-50 w-full h-full md:w-lg"></div>
+      <div id="bg" class="fixed w-full h-full md:w-lg"></div>
+      <div id="app" class="relative w-full h-full md:w-lg">
+        <component :is="currentComponent"/>
         <Btn />
       </div>
     </div>
@@ -42,8 +43,6 @@ const currentComponent = computed(() => {
   background-image: url('@/assets/img/bg.jpeg'); /* 用 @ 指定 Vite 的靜態路徑 */
   background-size: cover;
   background-position: center;
-  position: absolute;
-  opacity: 0.5;
   filter: blur(1px);
   z-index: 0;
 }
