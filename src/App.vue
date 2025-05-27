@@ -25,10 +25,10 @@ const currentComponent = computed(() => {
 <template>
 
   <div class="bg-zinc-900 w-screen h-screen flex items-center justify-center">
-    <div class="relative container flex items-center justify-center">
+    <div class="container flex items-center justify-center">
       <div id="bg-wrapper" class="fixed bg-black opacity-50 w-full h-full md:w-lg"></div>
       <div id="bg" class="fixed w-full h-full md:w-lg"></div>
-      <div id="app" class="relative w-full h-full md:w-lg">
+      <div id="app" class="w-full h-full md:w-lg">
         <component :is="currentComponent"/>
         <Btn />
       </div>
