@@ -9,7 +9,7 @@ const handleClick = () => {
 </script>
 
 <template>
-  <div id="btn" class="fixed bottom-0 left-50 right-50 mt-15 mb-15 flex items-center justify-center">
+  <div id="btn" class="flex items-center justify-center">
     <button 
       class="cursor-pointer animate__animated animate__pulse animate__infinite"
       @click="handleClick"

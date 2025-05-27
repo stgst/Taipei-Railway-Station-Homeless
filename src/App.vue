@@ -2,7 +2,6 @@
 import { ref, computed, provide } from 'vue'
 import Home from '@/components/Home.vue'
 import Intro from '@/components/Intro.vue'
-import Btn from '@/components/Btn.vue'
 
 const pageID = ref(0)
 
@@ -30,7 +29,6 @@ const currentComponent = computed(() => {
       <div id="bg" class="fixed w-full h-full md:w-lg"></div>
       <div id="app" class="w-full h-full md:w-lg">
         <component :is="currentComponent"/>
-        <Btn />
       </div>
     </div>
   </div>

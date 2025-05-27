@@ -1,3 +1,7 @@
+<script setup>
+import Btn from '@/components/Btn.vue'
+</script>
+
 <template>
 
     <div id="title" class="leading-15 text-white">
@@ -13,6 +17,10 @@
     </div>
     <div id="icon" class="animate__animated animate__bounceIn text-left mt-10">
         <img src="@/assets/img/icon_airplane.png">
+        
+    </div>
+    <div class="absolute bottom-20 left-0 right-0">
+        <Btn />
     </div>
 
 </template>
