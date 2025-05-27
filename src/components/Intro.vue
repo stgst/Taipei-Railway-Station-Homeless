@@ -3,9 +3,8 @@ import Btn from '@/components/Btn.vue'
 </script>
 
 <template>
-
-    <div id="title" class="text-white flex justify-center">
-        <div class="container md:mt-auto w-xs md:w-md text-left text-lg">
+    <div id="title" class="text-white flex justify-center h-screen overflow-y-auto">
+        <div class="container mx-auto px-4 py-8 md:mt-auto w-xs md:w-md text-left text-lg max-h-screen overflow-y-auto">
             <span>　　我們曾經到無家者議題倡議組織「人生百味」進行田野調查，也陸續參與了人生百味所辦理的街頭尾牙、芒草心所辦理的無家者真人圖書館。而這些經歷使我們對於無家者議題有許多新的認識，也使我們期望能夠向大眾分享我們在無家者議題中看見的、無家者們在自己的立場中想說的。
             </span><br><br>
             <span>　　為此，我們籌備了這次的北車導覽活動，預計費時90分鐘，跟著無家者 OA 大哥的腳步，穿越了台北車站周邊的街道、走進了他的記憶與生活。
