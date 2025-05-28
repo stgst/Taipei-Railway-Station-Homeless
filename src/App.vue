@@ -2,7 +2,14 @@
 import { ref, computed, provide } from 'vue'
 import Home from '@/components/Home.vue'
 import Intro from '@/components/Intro.vue'
-
+import first from '@/components/first.vue'
+import first2 from '@/components/first2.vue'
+import sec from '@/components/sec.vue'
+import third from '@/components/third.vue'
+import fourth from '@/components/fourth.vue'
+import fifth from '@/components/fifth.vue'
+import end from '@/components/end.vue'
+import thank_page from '@/components/thank_page.vue'
 const pageID = ref(0)
 
 // 提供 pageID 給其他元件使用
@@ -15,6 +22,22 @@ const currentComponent = computed(() => {
       return Home
     case 1:
       return Intro
+    case 2:
+      return first
+    case 3:
+      return first2
+    case 4:
+      return sec
+    case 5:
+      return third
+    case 6:
+      return fourth
+    case 7:
+      return fifth
+    case 8:
+      return end
+    case 9:
+      return thank_page
     default:
       return Home
   }
