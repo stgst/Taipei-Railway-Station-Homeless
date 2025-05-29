@@ -6,6 +6,9 @@ import Btn from '@/components/Btn.vue'
 const currentIndex = ref(0)
 let intervalId = null
 
+// API URL
+const API_URL = 'https://script.google.com/macros/s/AKfycbxqAegVQOC9Bt0UtXV1xds6ZAkTJYo6jTEESOvXZ1dG5-qyPJP1l1VRMeKyOegue90u/exec'
+
 // 留言數據
 const messages = ref([
     {
@@ -42,6 +45,31 @@ const messages = ref([
 
 // 新留言輸入
 const newMessage = ref('')
+const isSubmitting = ref(false)
+
+// 獲取留言
+const fetchMessages = async () => {
+    try {
+        const response = await fetch(API_URL)
+        if (!response.ok) throw new Error('獲取留言失敗')
+        
+        const data = await response.json()
+        if (data && Array.isArray(data)) {
+            // 處理字串陣列格式 - 每個元素都是一條留言文本
+            const apiMessages = data.map((text, index) => ({
+                id: Date.now() + index,
+                avatar: '../assets/img/user.png',
+                text: text,
+                name: '訪客'
+            }))
+            
+            // 更新留言數據
+            messages.value = apiMessages
+        }
+    } catch (error) {
+        console.error('獲取留言出錯:', error)
+    }
+}
 
 // 開始輪播
 const startCarousel = () => {
@@ -59,21 +87,50 @@ const stopCarousel = () => {
 }
 
 // 添加新留言
-const addMessage = () => {
-    if (newMessage.value.trim()) {
+const addMessage = async () => {
+    if (newMessage.value.trim() && !isSubmitting.value) {
+        isSubmitting.value = true
+        
+        // 創建新留言對象
         const newMsg = {
             id: Date.now(),
             avatar: '../assets/img/user.png',
             text: newMessage.value.trim(),
             name: '訪客'
         }
-        messages.value.push(newMsg)
-        newMessage.value = ''
         
-        currentIndex.value = messages.value.length - 1
-
-        stopCarousel()
-        setTimeout(startCarousel, 2000) 
+        try {
+            // 直接發送純文本，將被添加到現有的陣列中
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'text/plain',
+                },
+                body: newMessage.value.trim()
+            })
+            
+            // 檢查響應
+            if (!response.ok) {
+                console.error('留言提交失敗:', response.status, response.statusText);
+                throw new Error('留言提交失敗');
+            }
+            
+            // 將新留言添加到本地列表
+            messages.value.push(newMsg)
+            newMessage.value = ''
+            
+            // 切換到新留言
+            currentIndex.value = messages.value.length - 1
+            
+            // 暫停輪播，稍後重啟
+            stopCarousel()
+            setTimeout(startCarousel, 2000)
+        } catch (error) {
+            console.error('提交留言出錯:', error)
+            alert('留言提交失敗，請稍後再試')
+        } finally {
+            isSubmitting.value = false
+        }
     }
 }
 
@@ -86,14 +143,15 @@ const goToMessage = (index) => {
 
 // 生命週期
 onMounted(() => {
+    // 獲取留言
+    fetchMessages()
+    // 開始輪播
     startCarousel()
 })
 
 onUnmounted(() => {
     stopCarousel()
 })
-
-
 
 </script>
 
@@ -134,18 +192,26 @@ onUnmounted(() => {
                         class="msg_in" 
                         placeholder="分享你的想法..."
                         @keyup.enter="addMessage"
+                        :disabled="isSubmitting"
                     >
                     <button 
                         @click="addMessage"
                         class="msg_btn"
-                        :disabled="!newMessage.trim()"
+                        :disabled="!newMessage.trim() || isSubmitting"
                     >
-                        💬 留言
+                        <span v-if="isSubmitting" class="loading-spinner"></span>
+                        <span v-else>💬 留言</span>
                     </button>
                 </div>
                 
                 <div class="msg_card_display" @mouseenter="stopCarousel" @mouseleave="startCarousel">
+                    <div v-if="messages.length === 0" class="msg_card active">
+                        <div class="msg_content text-center">
+                            <div class="msg_text">暫無留言，來分享你的想法吧！</div>
+                        </div>
+                    </div>
                     <div 
+                        v-else
                         v-for="(message, index) in messages" 
                         :key="message.id"
                         :class="['msg_card', { active: index === currentIndex }]"
@@ -380,6 +446,27 @@ onUnmounted(() => {
     font-size: 12px;
     color: rgba(255, 255, 255, 0.7);
     font-weight: 500;
+}
+
+/* 加載動畫 */
+.loading-spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.text-center {
+    text-align: center;
 }
 
 /* 響應式設計 */
