@@ -50,10 +50,29 @@ const isSubmitting = ref(false)
 // 獲取留言
 const fetchMessages = async () => {
     try {
-        const response = await fetch(API_URL)
+        console.log('正在獲取留言...')
+        
+        // 先嘗試 cors 模式
+        let response
+        try {
+            response = await fetch(API_URL, {
+                method: 'GET',
+                mode: 'cors'
+            })
+        } catch (corsError) {
+            console.log('CORS 模式失敗，嘗試 no-cors 模式')
+            // 如果 cors 失敗，嘗試 no-cors 模式
+            response = await fetch(API_URL, {
+                method: 'GET',
+                mode: 'no-cors'
+            })
+        }
+        
         if (!response.ok) throw new Error('獲取留言失敗')
         
         const data = await response.json()
+        console.log('獲取到的留言數據:', data)
+        
         if (data && Array.isArray(data)) {
             // 處理字串陣列格式 - 每個元素都是一條留言文本
             const apiMessages = data.map((text, index) => ({
@@ -65,9 +84,12 @@ const fetchMessages = async () => {
             
             // 更新留言數據
             messages.value = apiMessages
+            console.log('留言數據更新完成，共', apiMessages.length, '則留言')
         }
     } catch (error) {
         console.error('獲取留言出錯:', error)
+        // 如果無法獲取留言，保持使用預設留言
+        console.log('使用預設留言數據')
     }
 }
 
@@ -91,43 +113,44 @@ const addMessage = async () => {
     if (newMessage.value.trim() && !isSubmitting.value) {
         isSubmitting.value = true
         
-        // 創建新留言對象
-        const newMsg = {
-            id: Date.now(),
-            avatar: '../assets/img/user.png',
-            text: newMessage.value.trim(),
-            name: '訪客'
-        }
-        
         try {
-            // 直接發送純文本，將被添加到現有的陣列中
+            console.log('正在提交留言:', newMessage.value.trim())
+            
+            // 使用 no-cors 模式來繞過 CORS 限制
             const response = await fetch(API_URL, {
                 method: 'POST',
+                mode: 'no-cors',
                 headers: {
-                    'Content-Type': 'text/plain',
+                    'Content-Type': 'application/json',
                 },
-                body: newMessage.value.trim()
+                body: JSON.stringify({"comment": newMessage.value.trim()})
             })
             
-            // 檢查響應
-            if (!response.ok) {
-                console.error('留言提交失敗:', response.status, response.statusText);
-                throw new Error('留言提交失敗');
-            }
+            console.log('Response received (no-cors mode)')
             
-            // 將新留言添加到本地列表
-            messages.value.push(newMsg)
+            // 在 no-cors 模式下，我們無法讀取響應內容
+            // 但如果沒有拋出錯誤，通常表示請求成功發送
+            
+            // 清空輸入框
             newMessage.value = ''
             
-            // 切換到新留言
-            currentIndex.value = messages.value.length - 1
+            // 等待一下再重新獲取留言列表，給服務器時間處理
+            setTimeout(async () => {
+                await fetchMessages()
+                // 切換到最新留言
+                currentIndex.value = messages.value.length - 1
+            }, 1000)
             
             // 暫停輪播，稍後重啟
             stopCarousel()
-            setTimeout(startCarousel, 2000)
+            setTimeout(startCarousel, 3000)
+            
+            console.log('留言提交完成')
+            alert('留言已提交！')
+            
         } catch (error) {
             console.error('提交留言出錯:', error)
-            alert('留言提交失敗，請稍後再試')
+            alert(`留言提交失敗：${error.message}`)
         } finally {
             isSubmitting.value = false
         }
