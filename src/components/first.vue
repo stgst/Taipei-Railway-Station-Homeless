@@ -1,5 +1,100 @@
 <script setup>
+import { ref, onMounted, onUnmounted } from 'vue'
 import Btn from '@/components/Btn.vue'
+
+// 響應式數據
+const currentIndex = ref(0)
+let intervalId = null
+
+// 留言數據
+const messages = ref([
+    {
+        id: 1,
+        avatar: '../assets/img/user.png',
+        text: '謝謝分享這麼真實的經歷，讓我重新思考對無家者的看法',
+        name: '訪客'
+    },
+    {
+        id: 2,
+        avatar: '../assets/img/user.png',
+        text: '每個人背後都有自己的故事，不應該只用表面來判斷',
+        name: '訪客'
+    },
+    {
+        id: 3,
+        avatar: '../assets/img/user.png',
+        text: '這個展覽很有意義，希望能改變社會對無家者的刻板印象',
+        name: '訪客'
+    },
+    {
+        id: 4,
+        avatar: '../assets/img/user.png',
+        text: '原來「舒適圈」不只存在於一般人的生活中...',
+        name: '訪客'
+    },
+    {
+        id: 5,
+        avatar: '../assets/img/user.png',
+        text: '感謝OA大哥的分享，讓我們看見不同的人生故事',
+        name: '訪客'
+    }
+])
+
+// 新留言輸入
+const newMessage = ref('')
+
+// 開始輪播
+const startCarousel = () => {
+    intervalId = setInterval(() => {
+        currentIndex.value = (currentIndex.value + 1) % messages.value.length
+    }, 3000) // 改為3秒切換一次
+}
+
+// 停止輪播
+const stopCarousel = () => {
+    if (intervalId) {
+        clearInterval(intervalId)
+        intervalId = null
+    }
+}
+
+// 添加新留言
+const addMessage = () => {
+    if (newMessage.value.trim()) {
+        const newMsg = {
+            id: Date.now(),
+            avatar: '../assets/img/user.png',
+            text: newMessage.value.trim(),
+            name: '訪客'
+        }
+        messages.value.push(newMsg)
+        newMessage.value = ''
+        
+        currentIndex.value = messages.value.length - 1
+
+        stopCarousel()
+        setTimeout(startCarousel, 2000) 
+    }
+}
+
+// 手動切換到指定留言
+const goToMessage = (index) => {
+    currentIndex.value = index
+    stopCarousel()
+    setTimeout(startCarousel, 3000) 
+}
+
+// 生命週期
+onMounted(() => {
+    startCarousel()
+})
+
+onUnmounted(() => {
+    stopCarousel()
+})
+
+
+
 </script>
 
 <template>
@@ -30,8 +125,55 @@ import Btn from '@/components/Btn.vue'
                 <li>你對無家者有什麼樣的好奇？</li>
                 <li>你認為無家者值得同情嗎？</li>
             </ol>
-            <!-- 這個地方可以寫個後端留言 -->
-            <br>
+
+            <div class="msg_container">
+                <div class="msg_input_area">
+                    <input 
+                        v-model="newMessage"
+                        type="text" 
+                        class="msg_in" 
+                        placeholder="分享你的想法..."
+                        @keyup.enter="addMessage"
+                    >
+                    <button 
+                        @click="addMessage"
+                        class="msg_btn"
+                        :disabled="!newMessage.trim()"
+                    >
+                        💬 留言
+                    </button>
+                </div>
+                
+                <div class="msg_card_display" @mouseenter="stopCarousel" @mouseleave="startCarousel">
+                    <div 
+                        v-for="(message, index) in messages" 
+                        :key="message.id"
+                        :class="['msg_card', { active: index === currentIndex }]"
+                    >
+                        <img src="../assets/img/user.png" class="avatar">
+                        <div class="msg_content">
+                            <div class="msg_name">{{ message.name }}</div>
+                            <div class="msg_text">{{ message.text }}</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 指示器 -->
+                <div class="msg_indicators">
+                    <button
+                        v-for="(message, index) in messages"
+                        :key="`indicator-${message.id}`"
+                        @click="goToMessage(index)"
+                        :class="['indicator', { active: index === currentIndex }]"
+                    ></button>
+                </div>
+                
+                <!-- 留言統計 -->
+                <div class="msg_stats">
+                    <span class="stats_text">共 {{ messages.length }} 則留言</span>
+                </div>
+            </div>
+            
             <p class="pl-4">
                 其實，每個人對無家者的看法都不同，這並無對錯之分。但很多時候，我們只是看見一個人衣衫襤褸，便心生同情，卻沒有思考過他們過去的故事。這種「可憐而幫助」的心態，有時候反而無法真正改變他們的處境。
             </p>
@@ -55,8 +197,6 @@ import Btn from '@/components/Btn.vue'
                 <img src="../assets/img/東三門2.jpg" alt="圖片2" class="w-full h-auto rounded-lg shadow-md object-cover" />
                 <!-- 圖片3（可選） -->
                 <img src="../assets/img/東三門3.jpg" alt="圖片3" class="w-full h-auto rounded-lg shadow-md object-cover" />
-                <!-- 圖片4（若有） -->
-                <!-- <img src="/img/sample4.jpg" alt="圖片4" class="w-full h-auto rounded-lg shadow-md object-cover" /> -->
             </div>
         </div>
         <!-- 按鈕 -->
@@ -67,8 +207,7 @@ import Btn from '@/components/Btn.vue'
     </div>
 </template>
 
-
-<style>
+<style scoped>
 #title {
     font-family: 'Noto Serif TC', sans-serif;
     font-weight: 600;
@@ -76,5 +215,187 @@ import Btn from '@/components/Btn.vue'
 
 * {
     z-index: 10;
+}
+
+.msg_container {
+    width: 350px;
+    margin: 20px auto;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.msg_input_area {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.msg_in {
+    flex: 1;
+    height: 40px;
+    border-radius: 20px;
+    padding: 8px 16px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    font-size: 14px;
+    background: rgba(255, 255, 255, 0.632);
+    color: #333;
+    transition: all 0.3s ease;
+}
+
+.msg_in:focus {
+    outline: none;
+    border-color: #4A90E2;
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
+}
+
+.msg_btn {
+    background: linear-gradient(135deg, #4A90E2, #357ABD);
+    color: white;
+    border-radius: 20px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.msg_btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, #357ABD, #2E6DA4);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+}
+
+.msg_btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.msg_card_display {
+    position: relative;
+    height: 120px;
+    overflow: hidden;
+    border-radius: 12px;
+    margin-bottom: 12px;
+}
+
+.msg_card {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.5));
+    border-radius: 12px;
+    padding: 16px;
+    color: #333;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+
+.msg_card.active {
+    opacity: 1;
+    transform: translateY(0);
+    z-index: 1;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.msg_content {
+    flex: 1;
+    min-width: 0;
+}
+
+.msg_name {
+    font-size: 12px;
+    font-weight: 600;
+    color: #666;
+    margin-bottom: 4px;
+}
+
+.msg_text {
+    font-size: 14px;
+    line-height: 1.5;
+    color: #333;
+    word-wrap: break-word;
+}
+
+.msg_indicators {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.indicator.active {
+    background: #4A90E2;
+    transform: scale(1.2);
+}
+
+.indicator:hover {
+    background: rgba(74, 144, 226, 0.6);
+}
+
+.msg_stats {
+    text-align: center;
+}
+
+.stats_text {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: 500;
+}
+
+/* 響應式設計 */
+@media (max-width: 480px) {
+    .msg_container {
+        width: 320px;
+        padding: 16px;
+    }
+    
+    .msg_in {
+        font-size: 13px;
+    }
+    
+    .msg_btn {
+        font-size: 13px;
+        padding: 6px 12px;
+    }
 }
 </style>
