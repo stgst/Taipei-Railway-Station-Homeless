@@ -97,7 +97,7 @@ const fetchMessages = async () => {
 const startCarousel = () => {
     intervalId = setInterval(() => {
         currentIndex.value = (currentIndex.value + 1) % messages.value.length
-    }, 3000) // 改為3秒切換一次
+    }, 5000) // 改為3秒切換一次
 }
 
 // 停止輪播
