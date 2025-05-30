@@ -115,8 +115,6 @@ const addMessage = async () => {
         
         try {
             console.log('正在提交留言:', newMessage.value.trim())
-            
-            // 使用 no-cors 模式來繞過 CORS 限制
             const response = await fetch(API_URL, {
                 method: 'POST',
                 mode: 'no-cors',
@@ -128,20 +126,13 @@ const addMessage = async () => {
             
             console.log('Response received (no-cors mode)')
             
-            // 在 no-cors 模式下，我們無法讀取響應內容
-            // 但如果沒有拋出錯誤，通常表示請求成功發送
-            
-            // 清空輸入框
             newMessage.value = ''
             
-            // 等待一下再重新獲取留言列表，給服務器時間處理
             setTimeout(async () => {
                 await fetchMessages()
-                // 切換到最新留言
                 currentIndex.value = messages.value.length - 1
             }, 1000)
             
-            // 暫停輪播，稍後重啟
             stopCarousel()
             setTimeout(startCarousel, 3000)
             
@@ -157,18 +148,14 @@ const addMessage = async () => {
     }
 }
 
-// 手動切換到指定留言
 const goToMessage = (index) => {
     currentIndex.value = index
     stopCarousel()
     setTimeout(startCarousel, 3000) 
 }
 
-// 生命週期
 onMounted(() => {
-    // 獲取留言
     fetchMessages()
-    // 開始輪播
     startCarousel()
 })
 
@@ -497,15 +484,27 @@ onUnmounted(() => {
     .msg_container {
         width: 320px;
         padding: 16px;
+        margin: 0 auto; 
+    }
+    
+    .msg_input_area {
+        width: 320px;
+        max-width: 100%; 
+        gap: 10px;
+        justify-content: center;
+        align-items: center;
     }
     
     .msg_in {
         font-size: 13px;
+        flex: 1; 
+        min-width: 0; 
     }
     
     .msg_btn {
         font-size: 13px;
         padding: 6px 12px;
+        flex-shrink: 0; 
     }
 }
 </style>
