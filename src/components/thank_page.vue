@@ -17,8 +17,14 @@ const resetExhibition = () => {
     <span class="block text-2xl font-bold mb-6 text-center">感謝與分工</span>
 
     <ul class="space-y-3">
-        <li><span class="font-semibold">主講人：</span>人生百味 OA大哥</li>
-        <li><span class="font-semibold">辦理成員：</span>蔡睿璟、劉穎宸、詹啟翔、張靖杭、王光晟</li>
+        <li>
+            <span class="font-semibold">主講人：</span>人生百味 OA大哥
+        </li>
+        <li>
+            <span class="font-semibold">辦理成員：</span>
+            <br>
+            <span class="ml-4">蔡睿璟、劉穎宸、詹啟翔、張靖杭、王光晟</span>
+        </li>
         <li><span class="font-semibold">合作組織：</span>人生百味</li>
         <li><span class="font-semibold">談合作：</span>蔡睿璟、劉穎宸</li>
         <li><span class="font-semibold">文案：</span>蔡睿璟、劉穎宸、詹啟翔</li>
