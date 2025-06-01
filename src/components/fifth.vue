@@ -7,7 +7,7 @@ const currentIndex = ref(0)
 let intervalId = null
 
 // API URL
-const API_URL = 'https://script.google.com/macros/s/AKfycbxqAegVQOC9Bt0UtXV1xds6ZAkTJYo6jTEESOvXZ1dG5-qyPJP1l1VRMeKyOegue90u/exec'
+const API_URL = 'https://script.google.com/macros/s/AKfycbzKpQZ2KbLBM10qRzXVD6T8eSMuNS9Ahht1SwTULupbeaoOragJIk0KavI-zinN7Rh3/exec'
 
 // 留言數據
 const messages = ref([
